@@ -1,0 +1,16 @@
+name: reaper
+channels:
+  - defaults
+  - conda-forge
+  - laed
+  - pytorch
+dependencies:
+  - pip
+  - ipykernel=6.0.2
+  - ipython=7.25.0
+  - jupyter=1.0.0
+  - jupyter_contrib_nbextensions=0.5.1
+  - jupyter_nbextensions_configurator=0.4.1
+  - python=3.8.10
+  - pip:
+    - dvc==2.5.4
