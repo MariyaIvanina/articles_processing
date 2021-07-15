@@ -5,6 +5,7 @@ channels:
   - laed
   - pytorch
 dependencies:
+  - pip
   - elasticsearch=6.3.1
   - gensim=3.5.0
   - hdbscan=0.8.18
@@ -51,3 +52,4 @@ dependencies:
     - pyspellchecker==0.5.4
     - googletrans==2.4.0
     #- allennlp==0.8.3 #can be problems while installing it, may be will require uninstall/install h5py
+    - dvc==2.5.4
