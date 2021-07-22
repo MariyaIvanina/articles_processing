@@ -115,7 +115,8 @@ class ProgramExtractor:
             program_filename = "../data/extracted_programs.xlsx",
             model_type="model",
             model_folder="../tmp/programs_extraction_model_2619",
-            column_name="programs_found"):
+            column_name="programs_found",
+            columns_to_process=["title", "abstract"]):
         if model_type == "keywords":
             return self.label_articles_by_keywords_search(articles_df, search_engine_inverted_index, _abbreviations_resolver,
             program_filename=program_filename, column_name=column_name)
@@ -129,8 +130,10 @@ class ProgramExtractor:
             articles_df[column_name] = ""
             for i in range(len(articles_df)):
                 programs_found = []
-                for res in program_ner_model(articles_df["sentence"].values[i]).ents:
-                    programs_found.append(res.text.strip())
+                for column in columns_to_process:
+                    for sentence in nltk.sent_tokenize(articles_df[column].values[i]):
+                        for res in program_ner_model(sentence).ents:
+                            programs_found.append(res.text.strip())
                 programs_found = list(set(programs_found))
                 programs = []
                 for program in programs_found:

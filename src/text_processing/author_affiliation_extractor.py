@@ -142,7 +142,7 @@ class AuthorAffiliationExtractor:
             return "united kingdom"
         if "russia" in raw_university_name.lower():
             return "russian federation"
-        if last_part.lower() in self.geo_names_finder.countries_set:
+        if last_part.lower() in self.geo_names_finder.countries_map:
             return last_part.lower()
         return self.geo_names_finder.get_country_from_text_with_and_without_accented_chars(raw_university_name)
 

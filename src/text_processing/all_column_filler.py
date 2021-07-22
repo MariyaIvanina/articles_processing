@@ -113,7 +113,8 @@ class AllColumnFiller():
             program_filename="../data/extracted_programs.xlsx" if "program_filename" not in column_info else column_info["program_filename"],
             model_type="model" if "model_type" not in column_info else column_info["model_type"],
             model_folder="../tmp/programs_extraction_model_2619" if "model_folder" not in column_info else column_info["model_folder"],
-            column_name="programs_found" if "column_name" not in column_info else column_info["column_name"])
+            column_name="programs_found" if "column_name" not in column_info else column_info["column_name"],
+            columns_to_process=["title", "abstract"] if "columns_to_process" not in column_info else column_info["columns_to_process"])
         return articles_df
 
     def fill_column_with_dictionary(self, articles_df, search_engine_inverted_index, _abbreviations_resolver, column_info, status_logger = None):
@@ -140,7 +141,8 @@ class AllColumnFiller():
         return articles_df
 
     def fill_measurements(self, articles_df, search_engine_inverted_index, _abbreviations_resolver, column_info, status_logger = None):
-        _measurements_labeler = measurements_labeler.MeasurementsLabeler("../bert/bert_results_6",
+        _measurements_labeler = measurements_labeler.MeasurementsLabeler(
+            "../bert/bert_results_6" if "model_folder" not in column_info else column_info["model_folder"],
             gpu_device_num = column_info["gpu_device_num"] if "gpu_device_num" in column_info else 0)
         articles_df = _measurements_labeler.label_measurement_columns(articles_df, column_info["folder_with_measurements"],\
             num_words_limit = None if "num_words_limit" not in column_info else column_info["num_words_limit"],
@@ -171,16 +173,15 @@ class AllColumnFiller():
         return articles_df
 
     def fill_outcomes(self, articles_df, search_engine_inverted_index, _abbreviations_resolver, column_info, status_logger = None):
-        _outcomes_full_logic_labeller = outcomes_full_logic_labeller.OutcomesFullLogicLabeller(
-            "/hdd2/data/maryia_pavlovets/bert_exp_outcome_new" if "model_folder" not in column_info else column_info["model_folder"],
-            "/hdd2/data/maryia_pavlovets/entity-recognition-model-more-2610" if "NER_folder" not in column_info else column_info["NER_folder"])
+        _outcomes_multi_label_predictor = outcomes_multi_label_predictor.OutcomesMultiLabelPredictor(
+            "../model/bert_exp_outcome_sentences_new_multilabel_15epoch_1300_mixed_0.7" if "model_folder" not in column_info else column_info["model_folder"])
         outcomes_found_column = "outcomes_found" if "column" not in column_info else column_info["column"]
         outcomes_details_column = "outcomes_details" if "column_details" not in column_info else column_info["column_details"]
         columns_to_take = ["title", "abstract"] if "columns_to_take" not in column_info else column_info["columns_to_take"]
         articles_df["text_temp"] = ""
         for column in columns_to_take:
             articles_df["text_temp"] = articles_df["text_temp"] + articles_df[column] + " . "
-        found_labels, outcome_details = _outcomes_full_logic_labeller.predict_all_labels(articles_df["text_temp"].values)
+        found_labels, outcome_details = _outcomes_multi_label_predictor.predict_all_labels(articles_df["text_temp"].values)
         articles_df[outcomes_found_column] = found_labels
         articles_df[outcomes_details_column] = ["\n".join(detail) for detail in outcome_details]
         articles_df = articles_df.drop(["text_temp"], axis=1)
