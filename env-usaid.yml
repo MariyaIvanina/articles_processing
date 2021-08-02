@@ -51,4 +51,4 @@ dependencies:
   - pip:
     - pyspellchecker==0.5.4
     - googletrans==2.4.0
-    - allennlp==0.8.3 #may be additionally uninstall/install h5py==2.10.0 and overrides==3.1.0
+    - allennlp==0.8.3 #manually uninstall/install h5py==2.10.0 and overrides==3.1.0 after env_update action for the first installation
