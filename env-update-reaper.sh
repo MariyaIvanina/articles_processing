@@ -1,6 +1,6 @@
 #!/bin/sh
 
-conda activate reaper
+source activate reaper
 conda env list
 
 conda env update -f env-reaper.yml

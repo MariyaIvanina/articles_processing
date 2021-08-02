@@ -1,6 +1,6 @@
 #!/bin/sh
 
-conda activate reaper
+source activate reaper
 conda env list
 
 python -m nltk.downloader punkt

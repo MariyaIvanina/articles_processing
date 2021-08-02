@@ -1,5 +1,5 @@
 #!/bin/sh
 
-conda activate reaper
+source activate reaper
 conda env list
 jupyter notebook

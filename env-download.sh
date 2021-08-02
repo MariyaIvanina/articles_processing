@@ -1,6 +1,6 @@
 #!/bin/sh
 
-conda activate usaid
+source activate usaid
 conda env list
 
 python -m nltk.downloader punkt
