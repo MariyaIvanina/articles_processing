@@ -16,7 +16,7 @@ from text_processing import duplicate_finder
 from text_processing import column_data_renamer
 from text_processing import label_interventions
 from text_processing import strategy_focus_labeller
-from outcomes_modelling import outcomes_full_logic_labeller
+from outcomes_modelling import outcomes_multi_label_predictor
 from interventions_labeling_lib import programs_extractor
 from interventions_labeling_lib import interventions_search_for_labeling
 from interventions_labeling_lib import measurements_labeler
