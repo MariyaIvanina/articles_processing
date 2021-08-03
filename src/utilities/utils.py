@@ -2,7 +2,6 @@ from sklearn.metrics import f1_score
 from text_processing import text_normalizer
 from interventions_labeling_lib import intervention_labeling
 from interventions_labeling_lib import usaid_intervention_labels
-from text_processing import text_normalizer
 
 def get_f1_score_test_data(test_data, intervention_labeler):
     res_pred, res_prob = intervention_labeler.predict_class(test_data.values, return_probs=True)
