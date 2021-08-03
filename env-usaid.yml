@@ -41,7 +41,10 @@ dependencies:
   - tensorflow-hub=0.6.0
   - psutil=5.6.3
   - theano=1.0.5
+  - joblib=1.0.1
   - pip:
     - pyspellchecker==0.5.4
     - googletrans==2.4.0
-    - allennlp==0.8.3 #manually uninstall/install h5py==2.10.0 and overrides==3.1.0 after env_update action for the first installation
+    - allennlp==0.8.3 #if it doesn't work, manually uninstall/install h5py==2.10.0 and overrides==3.1.0 after env_update action for the first installation
+    - bert-tensorflow==1.0.1
+    - tensorflow-gpu==1.13.1
