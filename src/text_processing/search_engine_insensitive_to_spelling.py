@@ -1,4 +1,4 @@
-import textdistance
+from utilities import utils
 from text_processing import text_normalizer
 import pickle
 import re
@@ -207,7 +207,7 @@ class SearchEngineInsensitiveToSpelling:
             for dict_word in self.dictionary_by_first_letters[word[:self.symbols_count]]:
                 if all_similar_words or (articles_count == 0 or len(self.get_articles_by_word(dict_word)) < 4*articles_count):
                     for w in intial_words:
-                        if textdistance.levenshtein.normalized_similarity(dict_word, w) >= threshold:
+                        if utils.normalized_levenshtein_score(dict_word, w) >= threshold:
                             words.add(dict_word)
         except:
             pass

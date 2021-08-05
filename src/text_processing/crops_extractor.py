@@ -3,12 +3,10 @@ import re
 import gensim
 from text_processing import text_normalizer
 from text_processing import crops_finder
-import textdistance
 import spacy
 import os
 from nltk.stem.wordnet import WordNetLemmatizer
-from utilities import excel_writer
-from utilities import excel_reader
+from utilities import excel_writer, excel_reader, utils
 from datetime import datetime
 
 nlp = spacy.load('en_core_web_sm')
@@ -77,7 +75,7 @@ class CropsExtractor:
         for word in self.find_hyponyms_for_word(hyponyms_search, "crop") - dict_to_check:
             exists = False
             for key in dict_to_check:
-                if textdistance.levenshtein.normalized_similarity(word, key) >= 0.8:
+                if utils.normalized_levenshtein_score(word, key) >= 0.8:
                     exists = True
             if not exists:
                 print(word, len(self.search_engine_inverted_index.find_articles_with_keywords([word],0.88,extend_with_abbreviations=False)))
@@ -106,7 +104,7 @@ class CropsExtractor:
                     print("###","###",word, len(self.search_engine_inverted_index.find_articles_with_keywords([word],0.85, extend_with_abbreviations=False)))
                     mappings = None 
                     for key in self.crops_names[level_2_name]:
-                        if (re.search(r"\b%se?s?\b"%word, key) is not None and not self.has_main_word(key, word)) or textdistance.levenshtein.normalized_similarity(
+                        if (re.search(r"\b%se?s?\b"%word, key) is not None and not self.has_main_word(key, word)) or utils.normalized_levenshtein_score(
                                 word, key) >= 0.8:
                             print("Mapped to ", self.crops_names[level_2_name][key])
                             mappings = self.crops_names[level_2_name][key]

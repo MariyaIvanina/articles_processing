@@ -8,8 +8,8 @@ from nltk.stem.wordnet import WordNetLemmatizer
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 import pycountry
 import pandas as pd
-import textdistance
 import os
+from utilities import utils
 
 stop_word_units = ["kg", "g", "mg", "ml", "l", "s", "ms", "km", "mm","la","en","le","de","et","los","une", "un", "del",\
 "i","ii","iii","iv","A","per","also","ha","cm","non","ton","etc","el", "among", "along"]
@@ -352,7 +352,7 @@ def are_words_similar_by_replacing_z_s(first_word, second_word):
     return are_words_similar_by_symbol_replacement(first_word, "s","z",second_word) or are_words_similar_by_symbol_replacement(first_word, "z","s",second_word)
 
 def are_words_similar(first_word, second_word, threshold):
-    if textdistance.levenshtein.normalized_similarity(first_word, second_word) >= threshold:
+    if utils.normalized_levenshtein_score(first_word, second_word) >= threshold:
         return True
     return are_words_similar_by_replacing_z_s(first_word, second_word)
 

@@ -30,7 +30,6 @@ dependencies:
   - xlsxwriter=1.1.1
   - textblob=0.15.1
   - beautifulsoup4=4.6.3
-  - textdistance=4.2.1
   - geotext=0.4.0
   - pycountry=18.5.26
   - zeep=2.5.0 
@@ -48,3 +47,4 @@ dependencies:
     - allennlp==0.8.3 #if it doesn't work, manually uninstall/install h5py==2.10.0 and overrides==3.1.0 after env_update action for the first installation
     - bert-tensorflow==1.0.1
     - tensorflow-gpu==1.13.1
+    - editdistance==0.5.3

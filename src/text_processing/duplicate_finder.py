@@ -5,10 +5,9 @@ from gensim import corpora, models
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from text_processing import text_normalizer
-from utilities import excel_writer
+from utilities import excel_writer, utils
 import os
 from time import time
-import textdistance
 
 class DuplicateFinder:
 
@@ -45,7 +44,7 @@ class DuplicateFinder:
                 second_doc_id = second_doc - len(df1)
                 first_title = " ".join(text_normalizer.get_normalized_text_with_numbers(df1[self.title_column].values[first_doc]))
                 second_title = " ".join(text_normalizer.get_normalized_text_with_numbers(df2[self.title_column].values[second_doc_id]))
-                if (textdistance.levenshtein.normalized_similarity(
+                if (utils.normalized_levenshtein_score(
                         first_title, second_title) >= 0.9 and (cosine_similarity(tfidf_matrix_abstract[first_doc], tfidf_matrix_abstract[second_doc]) >= 0.85 or df1[self.abstract_column].values[first_doc].strip() == "" or df2[self.abstract_column].values[second_doc_id].strip() == "")) or\
                  (cosine_similarity(tfidf_matrix[first_doc], tfidf_matrix[second_doc]) >= 0.95 and \
                 (cosine_similarity(tfidf_matrix_abstract[first_doc], tfidf_matrix_abstract[second_doc]) >= 0.85 or df1[self.abstract_column].values[first_doc].strip() == "" or df2[self.abstract_column].values[second_doc_id].strip() == "")) or\
@@ -109,7 +108,7 @@ class DuplicateFinder:
     def get_pair_if_duplicate(self, i,j, tfidf_matrix, tfidf_matrix_abstract, df):
         first_title = " ".join(text_normalizer.get_normalized_text_with_numbers(df[self.title_column].values[i]))
         second_title = " ".join(text_normalizer.get_normalized_text_with_numbers(df[self.title_column].values[j]))
-        if (textdistance.levenshtein.normalized_similarity(
+        if (utils.normalized_levenshtein_score(
                 first_title, second_title) >= 0.9 and (cosine_similarity(tfidf_matrix_abstract[i], tfidf_matrix_abstract[j]) >= 0.85 or df[self.abstract_column].values[i].strip() == "" or df[self.abstract_column].values[j].strip() == "")) or\
                          (cosine_similarity(tfidf_matrix[i], tfidf_matrix[j]) >= 0.95\
                         and (cosine_similarity(tfidf_matrix_abstract[i], tfidf_matrix_abstract[j]) >= 0.85 or df[self.abstract_column].values[i].strip() == "" or df[self.abstract_column].values[j].strip() == "")) or\

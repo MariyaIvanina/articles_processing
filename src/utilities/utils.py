@@ -2,6 +2,7 @@ from sklearn.metrics import f1_score
 from text_processing import text_normalizer
 from interventions_labeling_lib import intervention_labeling
 from interventions_labeling_lib import usaid_intervention_labels
+import editdistance
 
 def get_f1_score_test_data(test_data, intervention_labeler):
     res_pred, res_prob = intervention_labeler.predict_class(test_data.values, return_probs=True)
@@ -101,3 +102,6 @@ def print_per_label_stats(test_res, res_label, _outcomes_sentence_labeler):
         f1_score_ += f1_score(test_y, res_y, average="macro")
         total_cnt += 1
     print("Average ", f1_score_/total_cnt if total_cnt > 0 else 0)
+
+def normalized_levenshtein_score(a, b):
+    return 1 - editdistance.eval(a, b)/max(len(a), len(b))

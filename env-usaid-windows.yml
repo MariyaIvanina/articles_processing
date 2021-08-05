@@ -32,7 +32,6 @@ dependencies:
   - pyLDAvis=2.1.2
   - textblob=0.15.1
   - beautifulsoup4=4.6.3
-  - textdistance=4.2.1
   - geotext=0.4.0
   - pycountry=18.5.26
   - zeep=2.5.0 
@@ -52,3 +51,4 @@ dependencies:
     - pyspellchecker==0.5.4
     - googletrans==2.4.0
     - allennlp==0.8.3 #manually uninstall/install h5py==2.10.0 and overrides==3.1.0 after env_update action for the first installation
+    - editdistance==0.5.3

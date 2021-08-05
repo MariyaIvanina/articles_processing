@@ -3,7 +3,7 @@ from interventions_labeling_lib import hearst_pattern_finder
 from text_processing import text_normalizer
 import os
 import re
-import textdistance
+from utilities import utils
 from collections import deque
 
 class AbbreviationsResolver:
@@ -102,7 +102,7 @@ class AbbreviationsResolver:
         return text
 
     def are_abbreviations_similar(self, abbreviaion1, abbreviation2):
-        if textdistance.levenshtein.normalized_similarity(abbreviaion1, abbreviation2) > 0.85:
+        if utils.normalized_levenshtein_score(abbreviaion1, abbreviation2) > 0.85:
             return True
         if abbreviaion1.lower() == abbreviation2.lower():
             return True

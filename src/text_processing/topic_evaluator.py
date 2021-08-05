@@ -10,7 +10,7 @@ from gensim.models.phrases import Phrases, Phraser
 from text_processing import text_normalizer
 import os
 import re
-import textdistance
+from utilities import utils
 
 class TopicEvaluator:
 
@@ -99,7 +99,7 @@ class TopicEvaluator:
         for key_word in topic_keywords:
             key_word_embedding = self.get_mean_vector(key_word)
             for key in key_words:
-                if textdistance.levenshtein.normalized_similarity(
+                if utils.normalized_levenshtein_score(
                         key_word,key) >= 0.77 or (1 - spatial.distance.cosine(key_word_embedding, self.get_mean_vector(key))) >= 0.35:
                     ok_keywords_topics.add(key_word.lower())
                     ok_keywords_author.add(key.lower())
@@ -113,7 +113,7 @@ class TopicEvaluator:
             for key_word in all_other_keywords:
                 key_word_embedding = self.get_mean_vector(key_word)
                 for key in key_words:
-                    if textdistance.levenshtein.normalized_similarity(
+                    if utils.normalized_levenshtein_score(
                             key_word,key) >= 0.77 or (1 - spatial.distance.cosine(key_word_embedding, self.get_mean_vector(key))) >= 0.5:
                         additional_keywords.add(key.lower())
         #print(ok_keywords_topics)
