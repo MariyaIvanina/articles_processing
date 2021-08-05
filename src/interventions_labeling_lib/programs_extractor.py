@@ -4,6 +4,7 @@ from utilities import excel_writer
 from utilities import excel_reader
 import re
 import os
+import nltk
 
 nlp = spacy.load('en_core_web_sm')
 
