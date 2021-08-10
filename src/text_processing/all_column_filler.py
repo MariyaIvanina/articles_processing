@@ -14,7 +14,6 @@ from text_processing import keywords_normalizer
 from text_processing import journal_normalizer
 from text_processing import duplicate_finder
 from text_processing import column_data_renamer
-from text_processing import context_grisp_classifier
 from text_processing import label_interventions
 from text_processing import strategy_focus_labeller
 from outcomes_modelling import outcomes_multi_label_predictor
@@ -50,7 +49,6 @@ class AllColumnFiller():
             "ComparedTermsLabeller":self.fill_compared_terms,
             "FullTextPriorityLabeller":self.fill_full_text_probability,
             "ColumnDataRenamer": self.fill_column_renamed_data,
-            "GRIPSClassifier": self.fill_grips_classifications,
             "InterventionLabeller": self.fill_intervention_classifications,
             "OutcomesFinder": self.fill_outcomes,
             "StrategyFocusLabeller": self.fill_strategy_focus
@@ -173,17 +171,6 @@ class AllColumnFiller():
         _priority_labeller = priority_labeler.PrioirityLabeler("../bert/full_text_3", boost_model="../bert/boost_full_text_1",\
          gpu_device_num = column_info["gpu_device_num"] if "gpu_device_num" in column_info else 0, model_folder = "../model/scibert_scivocab_uncased")
         articles_df = _priority_labeller.label_df_with_probabilities_to_use_full_text(articles_df)
-        return articles_df
-
-    def fill_grips_classifications(self, articles_df, search_engine_inverted_index, _abbreviations_resolver, column_info, status_logger = None):
-        _context_grisp_classifier = context_grisp_classifier.GRIPSClassificationFiller(status_logger=status_logger,
-            all_categories_file=("../tmp/ifad_documents/GRIPS_simple_table.xlsx" if "all_categories_file" not in column_info else column_info["all_categories_file"]),
-            distilled_categories_train=("../tmp/ifad_documents/distilled_subcategory.xlsx" if "distilled_categories_train" not in column_info else column_info["distilled_categories_train"]),
-            word_embeddings_folder=column_info["word_embeddings_folder"],
-            column_to_label="context" if "column_to_label" not in column_info else column_info["column_to_label"],
-            subcategory_column="subcategory" if "subcategory_column" not in column_info else column_info["subcategory_column"],
-            category_column="category" if "category_column" not in column_info else column_info["category_column"])
-        articles_df = _context_grisp_classifier.label_with_grisp_categories(articles_df)
         return articles_df
 
     def fill_outcomes(self, articles_df, search_engine_inverted_index, _abbreviations_resolver, column_info, status_logger = None):
