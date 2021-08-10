@@ -77,6 +77,8 @@ class AdvancedTextNormalizer:
         for doc in pairs_with_glued_words:
             for pair in pairs_with_glued_words[doc]:
                 for column in columns_to_clean:
+                    if column not in articles_df.columns:
+                        continue
                     articles_df[column].values[doc] = self.clean_text(articles_df[column].values[doc], pair[0],pair[1])
         return articles_df
 
@@ -100,12 +102,16 @@ class AdvancedTextNormalizer:
         for word in words_to_change:
             for article_id in search_engine_inverted_index.get_articles_by_word(word):
                 for column in columns_to_clean:
+                    if column not in articles_df.columns:
+                        continue
                     articles_df[column].values[article_id] = re.sub(r"\b%s\b"%word, word.lower(), articles_df[column].values[article_id])
         for word in text_normalizer.stopwords_all:
             if word.upper() in self.abbreviations_resolver.resolved_abbreviations:
                 continue
             for article_id in search_engine_inverted_index.get_articles_by_word(word.upper()):
                 for column in columns_to_clean:
+                    if column not in articles_df.columns:
+                        continue
                     articles_df[column].values[article_id] = re.sub(r"\b%s\b"%word.upper(), word.lower(), articles_df[column].values[article_id])
         return articles_df
 

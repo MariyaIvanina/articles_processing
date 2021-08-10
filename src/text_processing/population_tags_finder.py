@@ -2,7 +2,7 @@ from text_processing import text_normalizer
 
 class PopulationTagsFinder:
 
-    def __init__(self):
+    def __init__(self, columns_to_process=["title","abstract","keywords","identificators"]):
         self.small_scale_farmers_dictionary = ["smallhold", "smallholder","small farm","small farmer", "microfarm", "pastoral", \
                                           "pastoralist", "family run farm", "familyrun farm","family owned farm","familyowned farm", \
                                          "family managed farm","familymanaged farm", "agropastoral", "agropastoralist", "ejido",\
@@ -11,7 +11,7 @@ class PopulationTagsFinder:
                                "resource limited", "small size", "smallsize", "peasant"]
         self.farm_markers = ["farm", "farmer", "mixed farm", "mixed farmer", "mixedfarm", "mixedfarmer", "agriculture", "producer", "produce",\
                        "grower", "agronomy", "husbandry", "aquaculture", "floriculture", "horticulture"]
-        self.columns_to_process = ["title","abstract","keywords","identificators"]
+        self.columns_to_process = columns_to_process
 
     def find_positions_of_words(self, text_words, marker_words_set):
         positions_found = set()
