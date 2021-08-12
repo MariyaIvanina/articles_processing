@@ -48,3 +48,4 @@ dependencies:
     - bert-tensorflow==1.0.1
     - tensorflow-gpu==1.13.1
     - editdistance==0.5.3
+    - scikit-multilearn==0.2.0
