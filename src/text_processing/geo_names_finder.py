@@ -226,12 +226,15 @@ class GeoNameFinder:
                 self.world_bank_regions[country_name] = []
             self.world_bank_regions[country_name].append(text_normalizer.remove_accented_chars(map_df["Region"].values[i].strip()))
 
-    def fill_countries_by_search(self, articles_df, search_engine_inverted_index):
+    def fill_countries_by_search(self, articles_df, search_engine_inverted_index, prefix_for_columns=""):
+        country_codes_column = prefix_for_columns + "country_codes"
+        countries_mentioned_column = prefix_for_columns + "countries_mentioned"
         for country_code in self.countries_map_by_articles:
             for article in self.countries_map_by_articles[country_code]:
-                if country_code not in articles_df["country_codes"].values[article]:
-                    articles_df["country_codes"].values[article].append(country_code)
-                    articles_df["countries_mentioned"].values[article].append(self.get_country_name(country_code))
+                if country_code not in articles_df[country_codes_column].values[article]:
+                    articles_df[country_codes_column].values[article].append(country_code)
+                    articles_df[countries_mentioned_column].values[article].append(
+                        self.get_country_name(country_code))
         return articles_df
 
     def get_countries_by_search(self, text):
@@ -255,34 +258,33 @@ class GeoNameFinder:
             except:
                 pass
 
-    def fill_regions_by_countries(self, articles_df):
-        articles_df["geo_regions"] = ""
-        articles_df["world_bankdivision_regions"] = ""
+    def fill_regions_by_countries(self, articles_df, prefix_for_columns=""):
+        articles_df[prefix_for_columns+"geo_regions"] = ""
+        articles_df[prefix_for_columns+"world_bankdivision_regions"] = ""
         for i in range(len(articles_df)):
-            articles_df["geo_regions"].values[i] = []
-            articles_df["world_bankdivision_regions"].values[i] = []
-            for country in articles_df["countries_mentioned"].values[i]:        
+            articles_df[prefix_for_columns+"geo_regions"].values[i] = []
+            articles_df[prefix_for_columns+"world_bankdivision_regions"].values[i] = []
+            for country in articles_df[prefix_for_columns+"countries_mentioned"].values[i]:        
                 if country in self.geo_regions:
-                    articles_df["geo_regions"].values[i].append(self.geo_regions[country])
+                    articles_df[prefix_for_columns+"geo_regions"].values[i].append(self.geo_regions[country])
                 if country in self.world_bank_regions:
-                    articles_df["world_bankdivision_regions"].values[i].extend(self.world_bank_regions[country])
-            articles_df["geo_regions"].values[i] = list(set(articles_df["geo_regions"].values[i]))
-            articles_df["world_bankdivision_regions"].values[i] = list(set(articles_df["world_bankdivision_regions"].values[i]))
+                    articles_df[prefix_for_columns+"world_bankdivision_regions"].values[i].extend(self.world_bank_regions[country])
+            articles_df[prefix_for_columns+"geo_regions"].values[i] = list(set(articles_df[prefix_for_columns+"geo_regions"].values[i]))
+            articles_df[prefix_for_columns+"world_bankdivision_regions"].values[i] = list(
+                set(articles_df[prefix_for_columns+"world_bankdivision_regions"].values[i]))
         return articles_df
 
-    def fill_regions_from_search(self, articles_df,search_engine_inverted_index):
+    def fill_regions_from_search(self, articles_df,search_engine_inverted_index,prefix_for_columns=""):
         for region in self.region_by_name:
             for article in search_engine_inverted_index.find_articles_with_keywords([region.lower()],0.9, extend_with_abbreviations = False):
-                if self.region_by_name[region] not in articles_df["geo_regions"].values[article]:
-                    articles_df["geo_regions"].values[article].append(self.region_by_name[region])
+                if self.region_by_name[region] not in articles_df[prefix_for_columns+"geo_regions"].values[article]:
+                    articles_df[prefix_for_columns+"geo_regions"].values[article].append(self.region_by_name[region])
         return articles_df
 
-    def find_countries_and_regions_from_search(self, articles_df, search_engine_inverted_index):
-        articles_df = self.fill_countries_by_search(articles_df, search_engine_inverted_index)
-        articles_df = self.fill_regions_by_countries(articles_df)
-        articles_df = self.fill_regions_from_search(articles_df,search_engine_inverted_index)
-        for column in ["country_codes", "countries_mentioned","geo_regions", "world_bankdivision_regions", "provinces", "districts"]:
-            articles_df = text_normalizer.replace_string_default_values(articles_df, column)
+    def find_countries_and_regions_from_search(self, articles_df, search_engine_inverted_index, prefix_for_columns=""):
+        articles_df = self.fill_countries_by_search(articles_df, search_engine_inverted_index,prefix_for_columns=prefix_for_columns)
+        articles_df = self.fill_regions_by_countries(articles_df,prefix_for_columns=prefix_for_columns)
+        articles_df = self.fill_regions_from_search(articles_df,search_engine_inverted_index,prefix_for_columns=prefix_for_columns)
         return articles_df
 
     def extract_country_by_geotext(self, raw_university_name):
@@ -345,14 +347,20 @@ class GeoNameFinder:
         return text_normalizer.remove_accented_chars(city_with_accented_chars if city_with_accented_chars != "" else city_without_accented_chars)
 
     def label_articles_with_geo_names(self, articles_df, search_engine_inverted_index,
-        continue_label = False, only_countries_columns = [], columns_with_country_code=[], use_cache=False):
+        continue_label = False, only_countries_columns = [], columns_with_country_code=[], use_cache=False,
+        columns_to_process=["abstract", "title", "keywords", "identificators", "sentence"], prefix_for_columns=""):
         for column in ["countries_mentioned", "country_codes","provinces", "districts"]:
+            column = prefix_for_columns + column
             if column not in articles_df.columns or not continue_label:
                 articles_df[column] = ""
         self.create_countries_map_by_articles(search_engine_inverted_index)
         geo_names_cache = {}
         for i in range(len(articles_df)):
-            if articles_df["countries_mentioned"].values[i] != "" and (articles_df["countries_mentioned"].values[i] == articles_df["countries_mentioned"].values[i]):
+            countries_mentioned_column = prefix_for_columns + "countries_mentioned"
+            country_codes_column = prefix_for_columns + "country_codes"
+            provinces_column = prefix_for_columns + "provinces"
+            districts_column = prefix_for_columns + "districts"
+            if articles_df[countries_mentioned_column].values[i] != "" and (articles_df[countries_mentioned_column].values[i] == articles_df[countries_mentioned_column].values[i]):
                 continue
             only_countries = set()
             if len(columns_with_country_code) > 0:
@@ -365,20 +373,23 @@ class GeoNameFinder:
                 only_countries_text = " . ".join([articles_df[column].values[i] for column in only_countries_columns])
                 only_countries = list(set(self.get_all_countries_from_text(only_countries_text)[1]).\
                     union(self.get_countries_by_search(only_countries_text)))
-            full_text = " . ".join([articles_df[column].values[i] for column in ["abstract", "title", "keywords", "identificators", "sentence"] if column in articles_df.columns])
+            full_text = " . ".join([articles_df[column].values[i] for column in columns_to_process if column in articles_df.columns])
             if use_cache and full_text in geo_names_cache:
                 countries, country_codes, provinces, districts = geo_names_cache[full_text]
             else:
                 countries, country_codes, provinces, districts =  self.get_all_countries_from_text(full_text, only_countries = only_countries)
                 if use_cache:
                     geo_names_cache[full_text] = (countries, country_codes, provinces, districts)
-            articles_df["countries_mentioned"].values[i] = countries
-            articles_df["country_codes"].values[i] = country_codes
-            articles_df["provinces"].values[i] = provinces
-            articles_df["districts"].values[i] = districts
+            articles_df[countries_mentioned_column].values[i] = countries
+            articles_df[country_codes_column].values[i] = country_codes
+            articles_df[provinces_column].values[i] = provinces
+            articles_df[districts_column].values[i] = districts
             #print(only_countries, articles_df["countries_mentioned"].values[i], articles_df["country_codes"].values[i],
             #    articles_df["provinces"].values[i], articles_df["districts"].values[i])
             if i%5000 == 0 or i == len(articles_df) -1:
                 print("Processed %d items" % i)
-        articles_df = self.find_countries_and_regions_from_search(articles_df, search_engine_inverted_index)
+        articles_df = self.find_countries_and_regions_from_search(articles_df, search_engine_inverted_index, prefix_for_columns=prefix_for_columns)
+        for column in ["country_codes", "countries_mentioned","geo_regions", "world_bankdivision_regions", "provinces", "districts"]:
+            column = prefix_for_columns + column
+            articles_df = text_normalizer.replace_string_default_values(articles_df, column)
         return articles_df

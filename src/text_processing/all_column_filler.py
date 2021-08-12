@@ -82,7 +82,9 @@ class AllColumnFiller():
         articles_df = countries_finder.label_articles_with_geo_names(articles_df, search_engine_inverted_index,\
          only_countries_columns = [] if "only_countries_columns" not in column_info else column_info["only_countries_columns"],
          columns_with_country_code = [] if "columns_with_country_code" not in column_info else column_info["columns_with_country_code"],
-         use_cache= False if "use_cache" not in column_info else column_info["use_cache"])
+         use_cache= False if "use_cache" not in column_info else column_info["use_cache"],
+         columns_to_process=["abstract", "title", "keywords", "identificators", "sentence"] if "columns_to_process" not in column_info else column_info["columns_to_process"],
+         prefix_for_columns="" if "prefix_for_columns" not in column_info else column_info["prefix_for_columns"])
         return articles_df
 
     def fill_topic_keywords(self, articles_df, search_engine_inverted_index, _abbreviations_resolver, column_info, status_logger = None):
